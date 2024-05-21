@@ -46,6 +46,7 @@
       onCreate = {
         # Example: install JS dependencies from NPM
         # npm-install = "npm install";
+        poetry-install = "poetry install";
       };
       # Runs when the workspace is (re)started
       onStart = {
