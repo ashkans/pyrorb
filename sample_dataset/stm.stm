@@ -1,0 +1,24 @@
+east_catchment - 1: 1.5 hour 1% Design Storm No.* Temporal Pattern
+DESIGN
+C  
+C  Date run           : 14 May 2024 16:49
+C  Catchment file     : T:\Watsons Road_80_Moe_3240\_M Overall\C - Main Drainage (Melb Water)\Hydrological Modelling\RORB\RORB- DPM\Post-Developed-Storage sizing.catg
+C  Storm area (km²)   :       5.04
+C  Storm ARI (yr)     : 1%
+C  Storm duration     : 1.5 hour
+C  Temporal pattern   : ARR2016 pattern, 21 (point temporal patterns)
+C  Spatial pattern    : Uniform
+C  Burst depth (mm)   :    49.50
+C  Areal Red. Fact.   :     0.94 (ARR2016 approach)
+C  ARF*BurDepth(mm)   :    46.61
+C  
+C  Embedded burst filtering applied
+   0.08333,200, 1,  1, 1, -99
+ 0,  18
+Temporal pattern (% of depth)
+  2.30,  2.51,  5.40, 10.54,  5.72,  3.79,  8.64,  9.22,  8.92, 11.27,  5.62,  4.56,  2.91,
+  2.87,  3.24,  4.33,  4.56,  3.60,-99.00
+C  Sub-area rainfall depths (areally weighted average depth =      46.61 mm)
+  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,
+  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,
+  46.61,  46.61,  46.61,  46.61,  46.61,  46.61,  46.61, -99.00

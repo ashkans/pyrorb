@@ -1,7 +1,10 @@
-import zipfile
 import os
+import shutil
+import tempfile
+import zipfile
 from glob import glob
-from pathlib import Path
+
+from pyrorb.utils import make_par_files
 
 
 class FileManager:
@@ -78,25 +81,32 @@ def create_text_files(strings_dict):
         with open(temp_file, 'w') as file:
             file.write(text)
 
-def make_par_files(file_list, output_dir, k=10, m=0.8, il=20, cl=2):
-    files = [file for file_pattern in file_list for file in glob(str(file_pattern))]
-    cfiles = [file for file in files if file.endswith('.catg')]
-    sfiles = [file for file in files if file.endswith('.stm')]
-    output_files = {}
+def with_temp_dir(func, *args, **kwargs):
+    """
+    Creates a temporary directory, runs the given function with the directory path as an argument,
+    and then deletes the directory after the function completes.
 
-    for cfile in cfiles:
-        for sfile in sfiles:
-            fn = Path(output_dir) / f'{Path(cfile).stem}_{Path(sfile).stem}.par'
-            output_files[fn] = f"""# BEGIN
-Cat file :{Path(cfile).stem}.catg
-Stm file :{Path(sfile).stem}.stm
-Lumped kc:T
-Verbosity:3
-Lossmodel:1
-Num ISA  :1
-ISA 1    :{k},{m}
-Num burst:1
-ISA 1    :{il},{cl}
-# END"""
+    :param func: A function that takes a single argument, the path to the temporary directory.
 
-    return output_files
+    ===
+
+    # Example usage of the utility function
+    def example_operations(temp_dir):
+        temp_file_path = os.path.join(temp_dir, 'temp_file.txt')
+        with open(temp_file_path, 'w') as temp_file:
+            temp_file.write("This is some temporary data.")
+        
+        with open(temp_file_path, 'r') as temp_file:
+            data = temp_file.read()
+            print(f"Data read from temporary file: {data}")
+
+    if __name__ == "__main__":
+        with_temp_dir(example_operations)    
+    """
+    temp_dir = tempfile.mkdtemp()
+    try:
+        func(temp_dir, *args, **kwargs)
+
+    finally:
+        shutil.rmtree(temp_dir)
+        
