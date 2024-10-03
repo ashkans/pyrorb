@@ -6,6 +6,8 @@ from pyrorb.utils import make_par
 from pathlib import Path
 import uuid
 
+from typing import List
+
 class BaseExperiment:
     '''
     This class is the base experiment of a rorb simulation.
@@ -128,3 +130,26 @@ if __name__ == "__main__":
     print(exp.stm_data)
     print('='*64)
     #exp.write_files(PATH_TO_SAVE)
+
+
+
+if __name__ == "__main__":
+    # Sample use case for StormEnsembleExperiment
+    from pyrorb.config_manager import ConfigManager
+    from pyrorb.runner import ExperimentRunner
+
+    config = ConfigManager('./config.json')
+    dataset_path = Path(config.get('sample_dataset'))
+    catg_file_path = dataset_path / 'catg.catg'
+    stm_file_paths = [dataset_path / 'stm1.stm', dataset_path / 'stm2.stm', dataset_path / 'stm3.stm']
+
+    ensemble_exp = StormEnsembleExperiment(catg_file_path, stm_file_paths, kc=0.4, m=1.2, il=10.0, cl=5.0)
+    runner = ExperimentRunner(config)
+
+    ensemble_exp.run_experiments(runner)
+
+    # Plot results for each experiment
+    for exp in ensemble_exp.experiments:
+        hydrograph = exp.result.hydrographs.get('Hyd009')
+        if hydrograph:
+            hydrograph.plot()
