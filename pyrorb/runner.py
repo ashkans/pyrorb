@@ -1,11 +1,17 @@
 # imports
+import os
+from pathlib import Path
+from typing import List
+
+from dotenv import load_dotenv
+
+from pyrorb.client import RorbClient
+from pyrorb.config_manager import ConfigManager
 from pyrorb.experiments.base_experiment import BaseExperiment
 from pyrorb.file_manager import create_zip, with_temp_dir
-from pathlib import Path
-from pyrorb.client import RorbClient
 from pyrorb.result import Result
-from pyrorb.config_manager import ConfigManager
-from typing import List
+
+load_dotenv()
 
 class ExperimentRunner:
     '''
@@ -17,10 +23,10 @@ class ExperimentRunner:
     Receive the resulting zip file, extract the files, read the resulting files, and produce a result object for each experiment. The result will have the identifier in its name.
     '''
 
-    def __init__(self, config:ConfigManager, experiments:List[BaseExperiment]=None):
+    def __init__(self, experiments:List[BaseExperiment]=None):
 
         
-        self.endpoint = config.get('endpoint')
+        self.endpoint = os.getenv('PYRORB_ENDPOINT')
         self.experiments = []
         self.maximum_experiment_per_request = 20
 

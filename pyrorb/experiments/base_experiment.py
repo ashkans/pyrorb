@@ -8,6 +8,10 @@ import uuid
 
 from typing import List
 
+
+def read_file(file_path: str, encoding='ISO-8859-1') -> str:
+    with open(file_path, 'r', encoding=encoding) as file:
+        return file.read()
 class BaseExperiment:
     '''
     This class is the base experiment of a rorb simulation.
@@ -35,13 +39,13 @@ class BaseExperiment:
             if cl is not None:
                 self.cl = cl
 
-    def __init__(self, catg_file_path: str, stm_file_path: str, kc=0.4, m=1.2, il=10.0, cl=5.0, encoding='ISO-8859-1', id=None):
+    def __init__(self, catg_data: str, stm_data: str, kc=0.4, m=1.2, il=10.0, cl=5.0, encoding='ISO-8859-1', id=None):
         self.catg_data = None
         self.stm_data = None
         self.parameters = self.Parameters(kc, m, il, cl)
         self.encoding = encoding
-        self.catg_data = self._read_file(catg_file_path)
-        self.stm_data = self._read_file(stm_file_path)
+        self.catg_data = catg_data#self._read_file(catg_file_path)
+        self.stm_data = stm_data#self._read_file(stm_file_path)
 
         if id is None:
             self.renew_id()
@@ -65,9 +69,7 @@ class BaseExperiment:
         return f'par{self.id}.par'
 
 
-    def _read_file(self, file_path: str) -> str:
-        with open(file_path, 'r', encoding=self.encoding) as file:
-            return file.read()
+
 
     def _write_file(self, file_path: str, data: str):
         with open(file_path, 'w') as file:
