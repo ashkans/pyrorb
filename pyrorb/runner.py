@@ -1,7 +1,7 @@
 # imports
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Callable
 
 from dotenv import load_dotenv
 
@@ -40,17 +40,20 @@ class ExperimentRunner:
         self.experiments.append(experiment)
         
 
-    def submit_batches(self):
+    def submit_batches(self, progress_callback: Callable[[int], None] = None):
         for i in range(0, len(self.experiments), self.maximum_experiment_per_request):
+
             batch = self.experiments[i:i+self.maximum_experiment_per_request]
-            with_temp_dir(self._submit_batch, batch, batch_id=i)
+            with_temp_dir(self._submit_batch, batch, batch_id=i, progress_callback=progress_callback)
+            
+
 
     
     @property
     def expeiment_map(self):
         return {exp.id: exp for exp in self.experiments}
 
-    def _submit_batch(self, temp_dir, batch, batch_id=''):
+    def _submit_batch(self, temp_dir, batch, batch_id='', progress_callback: Callable[[int], None] = None):
         '''submit the batch to the endpoint.'''
         for exp in batch:
             exp.write_files(temp_dir)
@@ -78,6 +81,9 @@ class ExperimentRunner:
 
 
             exp.result = Result(output)
+
+            if progress_callback:   
+                progress_callback()
                 
         
 
