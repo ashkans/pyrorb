@@ -6,12 +6,14 @@ authors = ["Ashkan Shokri <ashkan.shokri@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-pandas = "^2.1.2"
-
+python = ">=3.10,<3.13"
+httpx = "^0.25.0"
+jinja2 = "^3.1.4"
 
 [tool.poetry.group.dev.dependencies]
-
-
+matplotlib = "^3.8.1"
+jupyter = "^1.0.0"
+pandas = "^2.1.2"
 
 
 
