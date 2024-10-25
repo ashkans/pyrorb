@@ -6,6 +6,8 @@ authors = ["Ashkan Shokri <ashkan.shokri@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
+pandas = "^2.1.2"
+
 
 [tool.poetry.group.dev.dependencies]
 
