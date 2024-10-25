@@ -6,7 +6,6 @@ authors = ["Ashkan Shokri <ashkan.shokri@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
 pandas = "^2.1.2"
 httpx = "^0.25.0"
 jinja2 = "^3.1.4"
