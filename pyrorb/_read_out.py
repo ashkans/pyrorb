@@ -1,22 +1,6 @@
 
-
-import pandas as pd
-
 from pathlib import Path
 import numpy as np
-
-
-def find_median_one_ups(df_table):
-    median_one_up = np.floor(df_table.shape[0]/2) + 1
-    result_df = pd.DataFrame(columns=['pattern', 'peak'])
-    print(median_one_up)
-
-    for column in df_table:
-        idx = df_table[column].rank(method='first') == median_one_up
-        true_rows = df_table[column].index[idx]
-        result_df.loc[column] = true_rows.values[0], df_table.loc[true_rows,
-                                                                  column].values[0]
-    return result_df
 
 
 def extract_metadata_from_stm(file_path):
@@ -59,13 +43,17 @@ def read_sections(file_path):
 
 def read_hydrographs(sections):
     headers = None
+    hydrographs = {}
     for line in sections[' Hydrograph summary\n']:
         if headers is None:
             if 'Inc    Time' in line:
                 headers = line.split()
-                df = pd.DataFrame(columns=headers[1:])
+                for header in headers[1:]:
+                    hydrographs[header] = []
         else:
             this_line = line.replace('\n', '').split()
-            df.loc[this_line[0]] = this_line[1:]
+            time = this_line[0]
+            for i, header in enumerate(headers[1:], 1):
+                hydrographs[header].append((time, float(this_line[i])))
 
-    return df.set_index('Time').astype(float)
+    return hydrographs
