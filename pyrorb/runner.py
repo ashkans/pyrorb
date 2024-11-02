@@ -10,6 +10,9 @@ from pyrorb.config_manager import ConfigManager
 from pyrorb.experiments.base_experiment import BaseExperiment
 from pyrorb.file_manager import create_zip, with_temp_dir
 from pyrorb.result import Result
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
+from tqdm import tqdm
 
 load_dotenv()
 
@@ -23,12 +26,12 @@ class ExperimentRunner:
     Receive the resulting zip file, extract the files, read the resulting files, and produce a result object for each experiment. The result will have the identifier in its name.
     '''
 
-    def __init__(self, experiments:List[BaseExperiment]=None):
+    def __init__(self, experiments:List[BaseExperiment]=None, maximum_experiment_per_request:int=4):
 
         
         self.endpoint = os.getenv('PYRORB_ENDPOINT')
         self.experiments = []
-        self.maximum_experiment_per_request = 20
+        self.maximum_experiment_per_request = maximum_experiment_per_request
 
         self.rorb_client = RorbClient(self.endpoint)
 
@@ -40,13 +43,26 @@ class ExperimentRunner:
         self.experiments.append(experiment)
         
 
-    def submit_batches(self, progress_callback: Callable[[int], None] = None):
+    def submit_batches_legecy(self, progress_callback: Callable[[int], None] = None):
         for i in range(0, len(self.experiments), self.maximum_experiment_per_request):
 
             batch = self.experiments[i:i+self.maximum_experiment_per_request]
             with_temp_dir(self._submit_batch, batch, batch_id=i, progress_callback=progress_callback)
-            
 
+    def submit_batches(self, progress_callback: Callable[[int], None] = None):
+        num_batches = (len(self.experiments) + self.maximum_experiment_per_request - 1) // self.maximum_experiment_per_request
+
+        with ThreadPoolExecutor() as executor:
+            futures = []
+            # Submit all batches
+            for i in range(0, len(self.experiments), self.maximum_experiment_per_request):
+                batch = self.experiments[i:i+self.maximum_experiment_per_request]
+                submit_func = partial(with_temp_dir, self._submit_batch, batch, batch_id=i, progress_callback=progress_callback)
+                futures.append(executor.submit(submit_func))
+
+            # Wait for all batches with progress bar
+            for future in tqdm(futures, total=num_batches, desc="Processing batches", leave=False):
+                future.result()
 
     
     @property
