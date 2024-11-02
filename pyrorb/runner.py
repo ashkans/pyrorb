@@ -12,7 +12,7 @@ from pyrorb.file_manager import create_zip, with_temp_dir
 from pyrorb.result import Result
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from tqdm import tqdm
+#from tqdm import tqdm
 
 load_dotenv()
 
@@ -49,7 +49,7 @@ class ExperimentRunner:
             batch = self.experiments[i:i+self.maximum_experiment_per_request]
             with_temp_dir(self._submit_batch, batch, batch_id=i, progress_callback=progress_callback)
 
-    def submit_batches(self, progress_callback: Callable[[int], None] = None):
+    def submit_batches(self, progress_callback: Callable[[int], None] = None, show_progress_bar:bool=True):
         num_batches = (len(self.experiments) + self.maximum_experiment_per_request - 1) // self.maximum_experiment_per_request
 
         with ThreadPoolExecutor() as executor:
@@ -61,8 +61,17 @@ class ExperimentRunner:
                 futures.append(executor.submit(submit_func))
 
             # Wait for all batches with progress bar
-            for future in tqdm(futures, total=num_batches, desc="Processing batches", leave=False):
-                future.result()
+            try:
+                import tqdm
+            except ImportError:
+                show_progress_bar = False
+
+            if show_progress_bar:
+                for future in tqdm.tqdm(futures, total=num_batches, desc="Processing batches", leave=False):
+                    future.result()
+            else:
+                for future in futures:
+                    future.result()
 
     
     @property
