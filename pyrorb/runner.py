@@ -33,7 +33,7 @@ class ExperimentRunner:
         self.experiments = []
         self.maximum_experiment_per_request = maximum_experiment_per_request
 
-        self.rorb_client = RorbClient(self.endpoint)
+        self.rorb_client = RorbClient(self.endpoint, on_error='retry', max_retries=3)
 
         if experiments:
             for exp in experiments:
@@ -52,7 +52,7 @@ class ExperimentRunner:
     def submit_batches(self, progress_callback: Callable[[int], None] = None, show_progress_bar:bool=True):
         num_batches = (len(self.experiments) + self.maximum_experiment_per_request - 1) // self.maximum_experiment_per_request
 
-        with ThreadPoolExecutor() as executor:
+        with ThreadPoolExecutor(200) as executor:
             futures = []
             # Submit all batches
             for i in range(0, len(self.experiments), self.maximum_experiment_per_request):
