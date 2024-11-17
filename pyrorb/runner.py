@@ -26,7 +26,7 @@ class ExperimentRunner:
     Receive the resulting zip file, extract the files, read the resulting files, and produce a result object for each experiment. The result will have the identifier in its name.
     '''
 
-    def __init__(self, experiments:List[BaseExperiment]=None, maximum_experiment_per_request:int=4):
+    def __init__(self, experiments:List[BaseExperiment]=None, maximum_experiment_per_request:int=10):
 
         
         self.endpoint = os.getenv('PYRORB_ENDPOINT')
